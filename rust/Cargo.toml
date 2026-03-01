@@ -1,0 +1,27 @@
+[package]
+name = "batch_pdf_pro"
+version = "1.0.0"
+edition = "2021"
+
+[lib]
+crate-type = ["staticlib", "cdylib"]
+
+[dependencies]
+flutter_rust_bridge = "2"
+lopdf = "0.33"
+aes = "0.8"
+block-modes = { version = "0.9", features = ["cbc"] }
+sha2 = "0.10"
+rand = "0.8"
+base64 = "0.22"
+image = "0.25"
+pdf = "0.9"
+thiserror = "1.0"
+uuid = { version = "1.8", features = ["v4"] }
+dirs = "5.0"
+chrono = "0.4"
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
