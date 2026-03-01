@@ -19,7 +19,6 @@ class _MergeScreenState extends State<MergeScreen> {
   final List<_SelectedFile> _selectedFiles = [];
   bool _isProcessing = false;
   double _progress = 0;
-  String? _outputPath;
 
   @override
   Widget build(BuildContext context) {
@@ -231,7 +230,6 @@ class _MergeScreenState extends State<MergeScreen> {
 
       if (result.success) {
         setState(() {
-          _outputPath = result.outputPath;
           _progress = 1.0;
         });
 

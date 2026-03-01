@@ -45,31 +45,28 @@ class _HistoryScreenState extends State<HistoryScreen> {
         title: const Text('Processed Files'),
         actions: [
           if (_files.isNotEmpty)
-            IconButton(
-              icon: const Icon(Icons.refresh),
-              onPressed: _loadFiles,
-            ),
+            IconButton(icon: const Icon(Icons.refresh), onPressed: _loadFiles),
         ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _files.isEmpty
-              ? const EmptyState(
-                  icon: Icons.folder_open,
-                  title: 'No Files Yet',
-                  subtitle: 'Processed files will appear here',
-                )
-              : RefreshIndicator(
-                  onRefresh: _loadFiles,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: _files.length,
-                    itemBuilder: (context, index) {
-                      final file = _files[index];
-                      return _buildFileCard(file);
-                    },
-                  ),
-                ),
+          ? const EmptyState(
+              icon: Icons.folder_open,
+              title: 'No Files Yet',
+              subtitle: 'Processed files will appear here',
+            )
+          : RefreshIndicator(
+              onRefresh: _loadFiles,
+              child: ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: _files.length,
+                itemBuilder: (context, index) {
+                  final file = _files[index];
+                  return _buildFileCard(file);
+                },
+              ),
+            ),
     );
   }
 
@@ -158,9 +155,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           ),
                           const Text(
                             ' • ',
-                            style: TextStyle(
-                              color: AppTheme.textSecondary,
-                            ),
+                            style: TextStyle(color: AppTheme.textSecondary),
                           ),
                           Text(
                             file.action,
@@ -253,18 +248,16 @@ class _HistoryScreenState extends State<HistoryScreen> {
         await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => PdfViewerScreen(
-              document: document,
-              fileName: file.name,
-            ),
+            builder: (context) =>
+                PdfViewerScreen(document: document, fileName: file.name),
           ),
         );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error opening PDF: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error opening PDF: $e')));
       }
     }
   }
@@ -318,7 +311,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.delete, color: AppTheme.errorColor),
-              title: const Text('Delete', style: TextStyle(color: AppTheme.errorColor)),
+              title: const Text(
+                'Delete',
+                style: TextStyle(color: AppTheme.errorColor),
+              ),
               onTap: () async {
                 Navigator.pop(context);
                 if (await _confirmDelete(file)) {
@@ -335,7 +331,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 }
 
-class PdfViewerScreen extends StatelessWidget {
+class PdfViewerScreen extends StatefulWidget {
   final PdfDocument document;
   final String fileName;
 
@@ -346,24 +342,37 @@ class PdfViewerScreen extends StatelessWidget {
   });
 
   @override
+  State<PdfViewerScreen> createState() => _PdfViewerScreenState();
+}
+
+class _PdfViewerScreenState extends State<PdfViewerScreen> {
+  late final PdfController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = PdfController(document: Future.value(widget.document));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(fileName),
-      ),
+      appBar: AppBar(title: Text(widget.fileName)),
       body: PdfView(
-        document: document,
+        controller: _controller,
         builders: PdfViewBuilders<DefaultBuilderOptions>(
           options: const DefaultBuilderOptions(),
-          documentLoaderBuilder: (_) => const Center(
-            child: CircularProgressIndicator(),
-          ),
-          pageLoaderBuilder: (_) => const Center(
-            child: CircularProgressIndicator(),
-          ),
-          errorBuilder: (_, error) => Center(
-            child: Text(error.toString()),
-          ),
+          documentLoaderBuilder: (_) =>
+              const Center(child: CircularProgressIndicator()),
+          pageLoaderBuilder: (_) =>
+              const Center(child: CircularProgressIndicator()),
+          errorBuilder: (_, error) => Center(child: Text(error.toString())),
         ),
       ),
     );

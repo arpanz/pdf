@@ -37,9 +37,9 @@ class BatchPdfApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => PdfService()),
+        Provider(create: (_) => PdfService()),
         ChangeNotifierProvider(create: (_) => BillingService()..initialize()),
-        ChangeNotifierProvider(create: (_) => AdService()..initialize()),
+        Provider(create: (_) => AdService()..initialize()),
       ],
       child: MaterialApp(
         title: 'BatchPDF Studio',

@@ -18,7 +18,6 @@ class SplitScreen extends StatefulWidget {
 class _SplitScreenState extends State<SplitScreen> {
   String? _selectedFilePath;
   String? _selectedFileName;
-  int _selectedFileSize = 0;
   int _pageCount = 1;
   final Set<int> _selectedPages = {};
   bool _isProcessing = false;
@@ -218,7 +217,6 @@ class _SplitScreenState extends State<SplitScreen> {
           setState(() {
             _selectedFilePath = file.path;
             _selectedFileName = file.name;
-            _selectedFileSize = file.size;
             _selectedPages.clear();
             _isAllSelected = false;
             // Assume single page for simplicity - would need PDF library for actual count
@@ -239,7 +237,6 @@ class _SplitScreenState extends State<SplitScreen> {
     setState(() {
       _selectedFilePath = null;
       _selectedFileName = null;
-      _selectedFileSize = 0;
       _selectedPages.clear();
       _pageCount = 1;
     });

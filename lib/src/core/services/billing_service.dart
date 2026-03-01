@@ -1,7 +1,7 @@
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:flutter/foundation.dart';
 
-class BillingService {
+class BillingService extends ChangeNotifier {
   static const String proProductId = 'batch_pdf_pro';
   
   final InAppPurchase _inAppPurchase = InAppPurchase.instance;
@@ -42,7 +42,12 @@ class BillingService {
     for (final PurchaseDetails purchaseDetails in purchaseDetailsList) {
       if (purchaseDetails.status == PurchaseStatus.purchased) {
         _isPro = true;
+        notifyListeners();
         debugPrint('Pro purchased!');
+      }
+
+      if (purchaseDetails.pendingCompletePurchase) {
+        _inAppPurchase.completePurchase(purchaseDetails);
       }
     }
   }
@@ -67,10 +72,11 @@ class BillingService {
   }
 
   Future<void> restorePurchases() async {
-    await _inAppPurchase.completePurchase('');
+    await _inAppPurchase.restorePurchases();
   }
 
   void setProStatus(bool value) {
     _isPro = value;
+    notifyListeners();
   }
 }
